@@ -29,29 +29,6 @@ O sistema simula um ambiente de agendamento de consultas médicas, incluindo o c
 - **Spring Email**: Envio automatizado de e-mails de confirmação.
 - **Configuração de Serialização**: Datas configuradas no padrão brasileiro via Jackson.
 
-## Estrutura do Projeto
-
-```
-src/
-  main/
-    java/
-      com/antonio/SistemadeAgendamentodeConsultas/
-        controller/            # Controllers REST (ex: AgendamentoController)
-        service/               # Regras de Negócio (ex: AgendamentoService, EmailService)
-        model/
-          entidades/           # Entidades JPA (ex: Agendamento, Paciente, Medico)
-          abstratos/           # Classes abstratas (ex: Pessoa)
-        enums/                 # Enumerações (ex: SituacaoAgendamento)
-        DTOs/                  # Objetos de Transferência de Dados (ex: AgendamentoCreateDTO)
-        interfaces/            # Interfaces relacionadas a cadastro
-        repository/            # Interfaces JPA Repository (ex: AgendamentoRepository)
-        config/                # Configurações globais (ex: JacksonConfig e SwaggerConfig)
-    resources/
-      application.properties   # Configuração do Spring Boot
-  test/
-    java/                     # Testes unitários
-```
-
 ## Exemplo de Fluxo de Agendamento
 
 1. Usuário realiza requisição POST `/agendamentos` com os dados do agendamento.
