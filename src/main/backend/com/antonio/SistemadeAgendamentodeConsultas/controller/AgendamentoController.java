@@ -41,4 +41,12 @@ public class AgendamentoController {
                     .body("Erro interno: " + e.getMessage());
         }
     }
+
+    @Operation(summary = "Deletar agendamento por Id", description = "Deletar agendamento por Id")
+    @DeleteMapping("/{id}")
+    public void deleteAgendamento(@PathVariable Long id){
+        agendamentoService.deletarAgendamento(id);
+    }
 }
+
+// PROBLEMAS COM A DATA DDE AGENDAMENTO, SEMPRE COLOCAR NESSE FORMATO: "dataAgendamento": "07/04/2026 03:26:21",

@@ -1,6 +1,7 @@
 package com.antonio.SistemadeAgendamentodeConsultas.service;
 
 import com.antonio.SistemadeAgendamentodeConsultas.DTOs.agendamento.AgendamentoCreateDTO;
+import com.antonio.SistemadeAgendamentodeConsultas.exception.AgendamentoNaoEncontradoExeption;
 import com.antonio.SistemadeAgendamentodeConsultas.model.entidades.*;
 import com.antonio.SistemadeAgendamentodeConsultas.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,5 +72,12 @@ public class AgendamentoService {
             """.formatted(nomePaciente, dataHora, nomeMedico, local);
 
         emailService.enviarEmail(email, "Confirmação de Agendamento", html);
+    }
+
+    public void deletarAgendamento(Long id) {
+        if(! agendamentoRepository.existsById(id)) {
+            throw new AgendamentoNaoEncontradoExeption("Agendamento não encontrado com o id: " + id);
+        }
+        agendamentoRepository.deleteById(id);
     }
 }
