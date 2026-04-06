@@ -23,7 +23,7 @@ public class Agendamento {
     @Column(name = "observacao", nullable = false, length = 300)
     private String observacoes;
 
-    @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss", shape = JsonFormat.Shape.STRING)
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss", shape = JsonFormat.Shape.STRING) // SEMPRE NESSE FORMATO: "dataAgendamento": "07/04/2026 03:26:21",
     @FutureOrPresent(message = "A data de agendamento deve ser no futuro ou presente") // @FutureOrPresent = a data deve ser no futuro ou no presente
     @NotNull(message = "A data de agendamento não pode ser nula")
     @Column(name = "dt_agendamento", nullable = false)
