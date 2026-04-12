@@ -1,9 +1,39 @@
 services:
-  postgres:
-    image: 'postgres:latest'
-    environment:
-      - 'POSTGRES_DB=mydatabase'
-      - 'POSTGRES_PASSWORD=secret'
-      - 'POSTGRES_USER=myuser'
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sistema-agendamentos-app
+    env_file:
+      - .env.docker
+    # Aplicação espera o banco ficar pronto para subir
+    depends_on:
+      postgres:
+        condition: service_healthy
     ports:
-      - '5432'
+      - "8081:8081"
+    restart: unless-stopped # Reinicia se cair
+
+  # Serviço do banco PostgreSQL usando alpine
+  postgres:
+    image: postgres:16-alpine
+    container_name: sistema-agendamentos-db
+    env_file:
+      - .env.docker
+    ports:
+      - "5432:5432"
+    # Volume para persistir os dados do banco entre reinicializações
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    # Verifica se o banco está pronto para receber conexões.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d sistemaDeAgendamento"]
+      interval: 10s # Testa a cada 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped # Reinicia se cair durante a verificação
+
+# Cria um volume nomeado no Docker
+volumes:
+  postgres_data:
