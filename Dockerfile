@@ -1,4 +1,4 @@
-# Imagem base com JDK 21 usada para compilar o projeto.
+# Imagem base com JDK 21 usada para compilar o projeto ↓↓↓↓
 FROM eclipse-temurin:21-jdk AS build
 
 WORKDIR /workspace
@@ -11,6 +11,7 @@ COPY src/ src/
 
 RUN ./mvnw -q -DskipTests package
 
+# Vai rodar o .jar sem precisar compilar ↓↓↓↓
 FROM eclipse-temurin:21-jre
 
 WORKDIR /app
