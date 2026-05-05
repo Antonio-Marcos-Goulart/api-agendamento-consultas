@@ -35,5 +35,3 @@ build/
 application.properties/
 
 .env
-.env.docker
-.env.local

@@ -1,39 +1,45 @@
+# Define os containers da aplicação e do banco
 services:
   app:
+    # Faz o build da imagem da aplicação usando o Dockerfile local
     build:
       context: .
       dockerfile: Dockerfile
     container_name: sistema-agendamentos-app
+    # Carrega variáveis locais definidas no arquivo .env
     env_file:
-      - .env.docker
-    # Aplicação espera o banco ficar pronto para subir
+      - .env
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/sistemaDeAgendamento
+    # Só sobe a aplicação quando o banco estiver saudável
     depends_on:
       postgres:
         condition: service_healthy
     ports:
       - "8081:8081"
-    restart: unless-stopped # Reinicia se cair
+    restart: unless-stopped
 
-  # Serviço do banco PostgreSQL usando alpine
   postgres:
+    # Usa a imagem oficial do PostgreSQL Alpine
     image: postgres:16-alpine
     container_name: sistema-agendamentos-db
-    env_file:
-      - .env.docker
+    environment:
+      POSTGRES_DB: sistemaDeAgendamento
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - "5432:5432"
-    # Volume para persistir os dados do banco entre reinicializações
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-    # Verifica se o banco está pronto para receber conexões.
+      - postgres_data:/var/lib/postgresql/data # Mantém os dados do banco após recriar o container
+
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d sistemaDeAgendamento"]
-      interval: 10s # Testa a cada 10s
+      # Verifica se o PostgreSQL está pronto para aceitar conexões
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d sistemaDeAgendamento"]
+      interval: 10s
       timeout: 5s
       retries: 5
       start_period: 10s
-    restart: unless-stopped # Reinicia se cair durante a verificação
+    restart: unless-stopped
 
-# Cria um volume nomeado no Docker
 volumes:
   postgres_data:
