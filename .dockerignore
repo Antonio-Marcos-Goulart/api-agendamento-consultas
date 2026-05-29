@@ -3,6 +3,6 @@
 target
 .env
 .env.docker
-README.md
-HELP.md
 *.iml
+DOCUMENTACAO_PROJETO.md
+MELHORIAS_RECOMENDADAS.md
