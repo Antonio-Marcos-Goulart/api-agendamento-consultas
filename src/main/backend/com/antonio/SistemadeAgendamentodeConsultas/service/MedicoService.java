@@ -96,24 +96,32 @@ public class MedicoService {
         medicoRepository.deleteById(id);
     }
 
-    public List<Medico> searchMedico(Long id, String cpf, String nome, String crm){
-        List<Medico> dadosSaidaMedico = List.of();
-        if (id !=null) {
+    public List<Medico> buscarMedico(Long id, String cpf, String nome, String crm) {
+        List<Medico> dadosSaidaMedico;
+
+        if (id != null) {
             Medico medico = medicoRepository.findById(id).orElse(null);
-            if (medico != null) {
-                dadosSaidaMedico = List.of(medico);
+
+            if (medico == null) {
+                throw new MedicoNaoEncontradoExeption("Médico não encontrado.");
             }
-        } else if (cpf != null && !cpf.isBlank()) {
+            return List.of(medico);
+        }
+
+        if (cpf != null && !cpf.isBlank()) {
             dadosSaidaMedico = medicoRepository.findByCpfContainingIgnoreCase(cpf);
         } else if (nome != null && !nome.isBlank()) {
             dadosSaidaMedico = medicoRepository.findByNomeContainingIgnoreCase(nome);
-        } else {
+        } else if (crm != null && !crm.isBlank()) {
             dadosSaidaMedico = medicoRepository.findByCrmContainingIgnoreCase(crm);
+        } else {
+            throw new IllegalArgumentException("Informe pelo menos um critério de pesquisa.");
         }
 
-        if (dadosSaidaMedico.isEmpty()) {// Lista vazia, vai lançar uma exceção
-            throw new MedicoNaoEncontradoExeption("Nenhum medico encontrado com os critérios fornecidos.");
+        if (dadosSaidaMedico.isEmpty()) {
+            throw new MedicoNaoEncontradoExeption("Nenhum médico encontrado com os critérios fornecidos.");
         }
+
         return dadosSaidaMedico;
     }
 }
