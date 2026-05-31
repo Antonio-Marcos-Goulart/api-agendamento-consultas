@@ -28,8 +28,8 @@ public class MedicoController {
         return ResponseEntity.ok(new MedicoDTO(saved));
     }
 
-    @Operation(summary = "Atualizar médico buscando por Id", description = "Atualizar médico buscando por Id")
     @PutMapping("/{id}")
+    @Operation(summary = "Atualizar médico buscando por Id", description = "Atualizar médico buscando por Id")
     public ResponseEntity<MedicoDTO> updateMedico(@PathVariable Long id, @Valid @RequestBody MedicoCreateDTO dto) {
         Medico updated = medicoService.updateMedico(id, dto);
         return ResponseEntity.ok(new MedicoDTO(updated));
@@ -41,20 +41,20 @@ public class MedicoController {
         return medicoService.getAllMedicos();
     }
 
-    @Operation(summary = "Buscar médico por Id", description = "Buscar médico por Id")
     @GetMapping("/{id}")
+    @Operation(summary = "Buscar médico por Id", description = "Buscar médico por Id")
     public Medico getMedicoById(@PathVariable Long id) {
         return medicoService.getMedicoById(id);
     }
 
-    @Operation(summary = "Deletar médico por Id", description = "Deletar médico por Id")
     @DeleteMapping("/{id}")
+    @Operation(summary = "Deletar médico por Id", description = "Deletar médico por Id")
     public void deleteMedico(@PathVariable Long id){
         medicoService.deleteMedico(id);
     }
 
-    @Operation(summary = "Busca medicos por id, cpf, nome ou CRM", description = "Busca medicos por id, cpf, nome ou CRM")
     @GetMapping("/search")
+    @Operation(summary = "Busca medicos por id, cpf, nome ou CRM", description = "Busca medicos por id, cpf, nome ou CRM")
     public List<Medico> searchMedico(
             @RequestParam(required = false) Long id,
             @RequestParam(required = false) String cpf,
