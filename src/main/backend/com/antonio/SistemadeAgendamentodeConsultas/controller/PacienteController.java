@@ -64,7 +64,7 @@ public class PacienteController {
             @RequestParam(required = false) Long id,
             @RequestParam(required = false) String cpf,
             @RequestParam(required = false) String nome) {
-        return pacienteService.searchPaciente(id, cpf, nome)
+        return pacienteService.buscarPaciente(id, cpf, nome)
                 .stream()
                 .map(PacienteDTO::new)
                 .collect(Collectors.toList());

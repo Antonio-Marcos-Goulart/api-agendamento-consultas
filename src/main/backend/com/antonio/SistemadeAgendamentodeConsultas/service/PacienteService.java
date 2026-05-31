@@ -8,6 +8,7 @@ import com.antonio.SistemadeAgendamentodeConsultas.model.entidades.Paciente;
 import com.antonio.SistemadeAgendamentodeConsultas.repository.PacienteRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseDataSource;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -66,24 +67,29 @@ public class PacienteService {
         pacienteRepository.delete(paciente);
     }
 
-    public List<Paciente> searchPaciente(Long id, String cpf, String nome) {
-        List<Paciente> dadosSaidaPaciente;
-        if (id != null) {
-            Paciente paciente = pacienteRepository.findById(id).orElse(null);
-            dadosSaidaPaciente = paciente != null ? List.of(paciente) : List.of();
-        } else if (cpf != null && !cpf.isBlank()) {
-            dadosSaidaPaciente = pacienteRepository.findByCpfContainingIgnoreCase(cpf);
-        } else if (nome != null && !nome.isBlank()) {
-            dadosSaidaPaciente = pacienteRepository.findByNomeContainingIgnoreCase(nome);
-        } else {
-            dadosSaidaPaciente = pacienteRepository.findAll();
+    public List<Paciente> buscarPaciente(Long id, String nome, String cpf) {
+        List<Paciente> dadosPaciente;
+
+        if(id != null) {
+            Paciente paciente = pacienteRepository.findById(id).orElseThrow(() ->
+                    new PacienteNaoEncontadoException("Paciente não encontrado"));
+            return List.of(paciente);
         }
 
-        if (dadosSaidaPaciente.isEmpty()) {
-            throw new PacienteNaoEncontadoException("Nenhum paciente encontrado com os critérios fornecidos.");
+        if (cpf != null && cpf.isBlank()) {
+            dadosPaciente = pacienteRepository.findByCpfContainingIgnoreCase(cpf);
+        } else if (nome != null && nome.isBlank()) {
+            dadosPaciente = pacienteRepository.findByNomeContainingIgnoreCase(nome);
+        } else {
+            throw new IllegalArgumentException("Informe pelo mentos um critério de pesquisa.");
         }
-        return dadosSaidaPaciente;
+
+        if (dadosPaciente.isEmpty()) {
+            throw new PacienteNaoEncontadoException("Nenhum paciente encontrado com os citérios fornecidos");
+        }
+        return dadosPaciente;
     }
+
 
 
     private void validarNome(String nome) {
