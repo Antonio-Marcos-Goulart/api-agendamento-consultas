@@ -100,11 +100,8 @@ public class MedicoService {
         List<Medico> dadosSaidaMedico;
 
         if (id != null) {
-            Medico medico = medicoRepository.findById(id).orElse(null);
-
-            if (medico == null) {
-                throw new MedicoNaoEncontradoExeption("Médico não encontrado.");
-            }
+            Medico medico = medicoRepository.findById(id).orElseThrow(() ->
+                    new MedicoNaoEncontradoExeption("Médico não encontrado"));
             return List.of(medico);
         }
 
