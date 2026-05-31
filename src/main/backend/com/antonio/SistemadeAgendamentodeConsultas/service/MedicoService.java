@@ -1,7 +1,9 @@
 package com.antonio.SistemadeAgendamentodeConsultas.service;
 
+import com.antonio.SistemadeAgendamentodeConsultas.DTOs.endereco.EnderecoCreateDTO;
+import com.antonio.SistemadeAgendamentodeConsultas.DTOs.medico.MedicoCreateDTO;
 import com.antonio.SistemadeAgendamentodeConsultas.exception.MedicoNaoEncontradoExeption;
-import com.antonio.SistemadeAgendamentodeConsultas.model.abstratos.Pessoa;
+import com.antonio.SistemadeAgendamentodeConsultas.model.entidades.Endereco;
 import com.antonio.SistemadeAgendamentodeConsultas.model.entidades.Medico;
 import com.antonio.SistemadeAgendamentodeConsultas.repository.MedicoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,11 +17,35 @@ public class MedicoService {
     @Autowired
     private MedicoRepository medicoRepository;
 
-    public Medico createMedico(Medico medico) {
+    public Medico createMedico(MedicoCreateDTO dto) {
+        Medico medico = new Medico();
+
+        medico.setNome(dto.getNome());
+        medico.setCpf(dto.getCpf());
+        medico.setTelefone(dto.getTelefone());
+        medico.setEmail(dto.getEmail());
+        medico.setDataNascimento(dto.getDataNascimento());
+        medico.setCrm(dto.getCrm());
+
+        if (dto.getEndereco() != null) {
+            medico.setEndereco(toEndereco(dto.getEndereco()));
+        }
+
         if (medico.getNome() == null || medico.getNome().length() < 3) {
             throw new IllegalArgumentException("O nome do médico deve ter pelo menos 3 caracteres");
         }
         return medicoRepository.save(medico);
+    }
+
+    private Endereco toEndereco(EnderecoCreateDTO dto) {
+        Endereco endereco = new Endereco();
+        endereco.setRua(dto.getRua());
+        endereco.setNumero(dto.getNumero());
+        endereco.setBairro(dto.getBairro());
+        endereco.setCidade(dto.getCidade());
+        endereco.setEstado(dto.getEstado());
+        endereco.setCep(dto.getCep());
+        return endereco;
     }
 
     public Medico getMedicoById(Long id) {
@@ -32,7 +58,7 @@ public class MedicoService {
     }
 
     // Atualiza: Nome, endereço, email, telefone, função e salário
-    public Medico updateMedico(Long id, Pessoa updatedMedico) {
+    public Medico updateMedico(Long id, MedicoCreateDTO updatedMedico) {
         Medico existingMedico = medicoRepository.findById(id)
                 .orElseThrow(() -> new MedicoNaoEncontradoExeption("Medico não encontrado com id: " + id));
 
@@ -41,7 +67,7 @@ public class MedicoService {
         }
 
         if (updatedMedico.getEndereco() != null) {
-            existingMedico.setEndereco(updatedMedico.getEndereco());
+            existingMedico.setEndereco(toEndereco(updatedMedico.getEndereco()));
         }
 
         if (updatedMedico.getEmail() != null && !updatedMedico.getEmail().isEmpty()) {
@@ -50,6 +76,14 @@ public class MedicoService {
 
         if (updatedMedico.getTelefone() != null && !updatedMedico.getTelefone().isEmpty()) {
             existingMedico.setTelefone(updatedMedico.getTelefone());
+        }
+
+        if (updatedMedico.getDataNascimento() != null) {
+            existingMedico.setDataNascimento(updatedMedico.getDataNascimento());
+        }
+
+        if (updatedMedico.getCrm() != null && !updatedMedico.getCrm().isEmpty()) {
+            existingMedico.setCrm(updatedMedico.getCrm());
         }
 
         return medicoRepository.save(existingMedico);
