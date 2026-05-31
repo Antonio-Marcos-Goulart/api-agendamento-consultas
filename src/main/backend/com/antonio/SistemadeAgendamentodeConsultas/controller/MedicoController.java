@@ -1,8 +1,12 @@
 package com.antonio.SistemadeAgendamentodeConsultas.controller;
 
+import com.antonio.SistemadeAgendamentodeConsultas.DTOs.medico.MedicoCreateDTO;
+import com.antonio.SistemadeAgendamentodeConsultas.DTOs.medico.MedicoDTO;
 import com.antonio.SistemadeAgendamentodeConsultas.model.entidades.Medico;
 import com.antonio.SistemadeAgendamentodeConsultas.service.MedicoService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,8 +23,16 @@ public class MedicoController {
 
     @PostMapping
     @Operation(summary = "Cadastrar médico", description = "Cadastrar médico")
-    public Medico createMedico(@RequestBody Medico medico){
-        return medicoService.createMedico(medico);
+    public ResponseEntity<MedicoDTO> createMedico(@Valid @RequestBody MedicoCreateDTO dto) {
+        Medico saved = medicoService.createMedico(dto);
+        return ResponseEntity.ok(new MedicoDTO(saved));
+    }
+
+    @Operation(summary = "Atualizar médico buscando por Id", description = "Atualizar médico buscando por Id")
+    @PutMapping("/{id}")
+    public ResponseEntity<MedicoDTO> updateMedico(@PathVariable Long id, @Valid @RequestBody MedicoCreateDTO dto) {
+        Medico updated = medicoService.updateMedico(id, dto);
+        return ResponseEntity.ok(new MedicoDTO(updated));
     }
 
     @GetMapping
@@ -33,12 +45,6 @@ public class MedicoController {
     @GetMapping("/{id}")
     public Medico getMedicoById(@PathVariable Long id) {
         return medicoService.getMedicoById(id);
-    }
-
-    @Operation(summary = "Atualizar médico buscando por Id", description = "Atualizar médico buscando por Id")
-    @PutMapping("/{id}")
-    public Medico updateMedico(@PathVariable Long id, @RequestBody Medico updatedMedico) {
-        return medicoService.updateMedico(id, updatedMedico);
     }
 
     @Operation(summary = "Deletar médico por Id", description = "Deletar médico por Id")
