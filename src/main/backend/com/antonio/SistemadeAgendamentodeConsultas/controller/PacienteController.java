@@ -22,7 +22,6 @@ public class PacienteController {
         this.pacienteService = pacienteService;
     }
 
-
     @Operation(summary = "Criar o cadastro do paciente", description = "Criar o cadastro do paciente")
     @PostMapping
     public ResponseEntity<Paciente> createPaciente(@Valid @RequestBody PacienteCreateDTO dto) {
