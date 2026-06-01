@@ -90,8 +90,6 @@ public class PacienteService {
         return dadosPaciente;
     }
 
-
-
     private void validarNome(String nome) {
         if (nome == null || nome.trim().length() < 3) {
             throw new IllegalArgumentException("O nome do paciente deve ter pelo menos 3 caracteres");
