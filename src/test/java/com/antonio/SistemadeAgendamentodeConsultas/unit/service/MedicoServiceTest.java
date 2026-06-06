@@ -1,5 +1,7 @@
 package com.antonio.SistemadeAgendamentodeConsultas.unit.service;
 
+import com.antonio.SistemadeAgendamentodeConsultas.DTOs.endereco.EnderecoCreateDTO;
+import com.antonio.SistemadeAgendamentodeConsultas.DTOs.medico.MedicoCreateDTO;
 import com.antonio.SistemadeAgendamentodeConsultas.enums.SituacaoCadastro;
 import com.antonio.SistemadeAgendamentodeConsultas.exception.MedicoNaoEncontradoExeption;
 import com.antonio.SistemadeAgendamentodeConsultas.model.entidades.Endereco;
@@ -35,11 +37,11 @@ class MedicoServiceTest {
 
     @Test
     void createMedicoDeveFalharQuandoNomeForInvalido() {
-        Medico medico = criarMedicoValido();
-        medico.setNome("Al");
+        MedicoCreateDTO dto = criarMedicoDtoValido();
+        dto.setNome("Al");
 
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> medicoService.createMedico(medico))
+                .isThrownBy(() -> medicoService.createMedico(dto))
                 .withMessageContaining("3 caracteres");
 
         verify(medicoRepository, never()).save(any(Medico.class));
@@ -48,11 +50,11 @@ class MedicoServiceTest {
     @Test
     void updateMedicoDeveAlterarSomenteCamposPreenchidos() {
         Medico existente = criarMedicoValido();
-        Medico atualizado = new Medico();
+        MedicoCreateDTO atualizado = new MedicoCreateDTO();
         atualizado.setNome("Carlos Souza");
         atualizado.setEmail("carlos.souza@email.com");
         atualizado.setTelefone("11912345678");
-        atualizado.setEndereco(criarEndereco("Rua Nova", "200"));
+        atualizado.setEndereco(criarEnderecoDto("Rua Nova", "200"));
 
         when(medicoRepository.findById(1L)).thenReturn(Optional.of(existente));
         when(medicoRepository.save(any(Medico.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -71,7 +73,7 @@ class MedicoServiceTest {
         Medico medico = criarMedicoValido();
         when(medicoRepository.findByCrmContainingIgnoreCase("123456")).thenReturn(List.of(medico));
 
-        List<Medico> resultado = medicoService.searchMedico(null, null, null, "123456");
+        List<Medico> resultado = medicoService.buscarMedico(null, null, null, "123456");
 
         assertThat(resultado).containsExactly(medico);
     }
@@ -96,6 +98,22 @@ class MedicoServiceTest {
         medico.setSituacaoCadastro(SituacaoCadastro.ATIVO);
         medico.setCrm("123456-SP");
         return medico;
+    }
+
+    private MedicoCreateDTO criarMedicoDtoValido() {
+        return MedicoCreateDTO.builder()
+                .nome("Carlos Lima")
+                .cpf("12345678901")
+                .telefone("11999999999")
+                .email("carlos@email.com")
+                .dataNascimento(LocalDate.of(1985, 3, 10))
+                .crm("123456-SP")
+                .endereco(criarEnderecoDto("Rua Medica", "10"))
+                .build();
+    }
+
+    private EnderecoCreateDTO criarEnderecoDto(String rua, String numero) {
+        return new EnderecoCreateDTO(rua, numero, null, "Centro", "Sao Paulo", "SP", "01001000");
     }
 
     private Endereco criarEndereco(String rua, String numero) {
