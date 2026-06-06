@@ -1,37 +1,76 @@
-HELP.md
+# Checklist local
+/MELHORIAS_RECOMENDADAS.md
+
+# Segredos e configuracoes locais
+.env
+.env.*
+!.env.example
+application-local.properties
+application-*.local.properties
+application-local.yml
+application-*.local.yml
+application-local.yaml
+application-*.local.yaml
+
+# Maven e artefatos de build
 target/
+build/
+out/
+*.class
+*.jar
 !.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
+# Logs, relatorios e arquivos temporarios
+logs/
+*.log
+*.tmp
+*.temp
+*.pid
+*.hprof
+hs_err_pid*
+replay_pid*
+dependency-reduced-pom.xml
 
-### IntelliJ IDEA ###
-.idea
+# Cobertura e relatorios
+.coverage/
+coverage/
+jacoco.exec
+
+# IntelliJ IDEA
+.idea/
 *.iws
 *.iml
 *.ipr
 
-### NetBeans ###
+# Eclipse / STS
+.apt_generated/
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache/
+
+# NetBeans
 /nbproject/private/
 /nbbuild/
 /dist/
 /nbdist/
 /.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
 
-### VS Code ###
+# VS Code
 .vscode/
 
-application.properties/
+# Sistema operacional
+.DS_Store
+Thumbs.db
+Desktop.ini
 
-.env
+# Arquivos auxiliares gerados pelo Spring Initializr
+HELP.md
