@@ -76,9 +76,9 @@ public class PacienteService {
             return List.of(paciente);
         }
 
-        if (cpf != null && cpf.isBlank()) {
+        if (cpf != null && !cpf.isBlank()) {
             dadosPaciente = pacienteRepository.findByCpfContainingIgnoreCase(cpf);
-        } else if (nome != null && nome.isBlank()) {
+        } else if (nome != null && !nome.isBlank()) {
             dadosPaciente = pacienteRepository.findByNomeContainingIgnoreCase(nome);
         } else {
             throw new IllegalArgumentException("Informe pelo mentos um critério de pesquisa.");
