@@ -92,7 +92,7 @@ class PacienteServiceTest {
     void searchPacienteDeveLancarExcecaoQuandoNaoEncontrarResultados() {
         when(pacienteRepository.findByNomeContainingIgnoreCase("Inexistente")).thenReturn(List.of());
 
-        assertThatThrownBy(() -> pacienteService.searchPaciente(null, null, "Inexistente"))
+        assertThatThrownBy(() -> pacienteService.buscarPaciente(null, "Inexistente", null))
                 .isInstanceOf(PacienteNaoEncontadoException.class)
                 .hasMessageContaining("Nenhum paciente encontrado");
     }
