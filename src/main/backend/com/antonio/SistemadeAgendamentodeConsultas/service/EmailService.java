@@ -22,7 +22,7 @@ public class EmailService { // Realiza o envio dos emails solicitados por outras
             MimeMessage mensagem = javaMailService.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mensagem, true, "UTF-8"); // Formatação UTF-8 = caracteres especiais ç, é, á, ô....
 
-            helper.setFrom("antoniomarcosgoulartt@gmail.com"); // Remetente
+            helper.setFrom("antoniomarcosgoulartt@gmail.com"); // Remetente fixo - mudar para variável
             helper.setTo(destinatario);
             helper.setSubject(assunto);
             helper.setText(conteudo, true); // Posso criar os e-mails em HTML
