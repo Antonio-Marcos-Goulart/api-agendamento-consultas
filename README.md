@@ -1,40 +1,194 @@
 # Sistema de Agendamento de Consultas
 
-Este projeto foi desenvolvido visando estudar, praticar e aperfeiçoar o desenvolvimento de software utilizando tecnologias modernas e APIs REST.
-O sistema simula um ambiente de agendamento de consultas médicas, incluindo o cadastro de pacientes, médicos e controle de horários.
+API REST (com um pequeno frontend estático) para cadastro de pacientes e médicos e criação de agendamentos de consultas, com envio automático de e-mail de confirmação.
 
-## Funcionalidades Principais
+Projeto de estudo, focado em praticar Spring Boot, JPA/Hibernate, validação de dados, documentação de API com OpenAPI/Swagger e envio de e-mail.
 
-- **Agendamento de Consultas**: Permite aos usuários cadastrar consultas, selecionando médico, paciente, data/hora, local, tipo e status.
-- **Cadastro e Gerenciamento**
-    - **Pacientes**: Registro, atualização e exclusão de pacientes.
-    - **Médicos**: Registro, escalas e vínculo com especialidades.
-- **Validações**: Garante que datas estejam no futuro/presente, campos obrigatórios preenchidos, etc.
-- **Enumeração de Status**: Situação do agendamento pode ser `PENDENTE`, `CONFIRMADO`, `CANCELADO` ou `CONCLUIDO`.
-- **Notificações por E-mail**: Confirmação do agendamento enviada automaticamente ao paciente.
-- **Exceções e Erros**: Mensagens detalhadas para erros de validação e recursos não encontrados via API REST.
-- **API RESTful**: Endpoints seguros para CRUD de agendamentos.
-- **DTOs**: Transferência de dados simplificada entre camadas.
+> Documentação técnica completa (modelo de dados, arquitetura, pontos de atenção, roadmap): [DOCUMENTACAO_PROJETO.md](DOCUMENTACAO_PROJETO.md)
 
-## Tecnologias Utilizadas
+## Sumário
 
-- **Java 21**
-- **Spring Boot**: Estrutura principal do backend, com dependências Spring Web, Spring Data JPA e Spring Scheduling.
-- **Hibernate/JPA**: ORM para persistência e consulta de dados em banco relacional.
-- **Bean Validation (javax.validation/jakarta.validation)**: Annotações para validações automáticas dos dados.
-- **Lombok**: Anotações para reduzir repetição de código em entidades e DTOs.
-- **Jackson**: Serialização e deserialização dos objetos JSON.
-- **Arquitetura MVC**: Controllers, Services, Models/Entities, DTOs e Repositories.
-- **Testes Unitários**: Estrutura para testes com JUnit no diretório `src/test/`.
-- **Spring Email**: Envio automatizado de e-mails de confirmação.
-- **Configuração de Serialização**: Datas configuradas no padrão brasileiro via Jackson.
+- [Funcionalidades](#funcionalidades)
+- [Tecnologias](#tecnologias)
+- [Pré-requisitos](#pré-requisitos)
+- [Configuração](#configuração)
+- [Como executar](#como-executar)
+- [Documentação da API (Swagger)](#documentação-da-api-swagger)
+- [Endpoints principais](#endpoints-principais)
+- [Exemplo de payload](#exemplo-de-payload)
+- [Testes](#testes)
+- [Estrutura do projeto](#estrutura-do-projeto)
+- [Autor](#autor)
 
-## Exemplo de Fluxo de Agendamento
+## Funcionalidades
 
-1. Usuário realiza requisição POST `/agendamentos` com os dados do agendamento.
-2. Backend verifica existência do paciente e médico.
-3. Realiza validações automáticas.
-4. Grava o agendamento e dispara e-mail de confirmação para o paciente.
+- Cadastro, atualização, busca e remoção de pacientes.
+- Cadastro, atualização, busca e remoção de médicos.
+- Criação e cancelamento de agendamentos, vinculando paciente, médico, data/hora, local, tipo e status.
+- Envio automático de e-mail de confirmação ao paciente após o agendamento.
+- Envio de e-mail com anexo via API.
+- Validações de dados (CPF, telefone, e-mail, CRM, datas obrigatórias/futuras).
+- Documentação interativa da API com Swagger UI.
+- Frontend estático simples para uso básico da API.
+
+## Tecnologias
+
+- Java 21
+- Spring Boot 3.4.5 (Web, Data JPA, Validation, Mail, Actuator)
+- Hibernate + PostgreSQL
+- Springdoc OpenAPI / Swagger UI
+- Lombok
+- Maven (Wrapper)
+- Docker e Docker Compose
+- HTML, CSS e JavaScript puro no frontend
+
+## Pré-requisitos
+
+- Java 21
+- Maven Wrapper (incluído no projeto, não precisa instalar Maven)
+- PostgreSQL local **ou** Docker + Docker Compose
+- Uma conta SMTP para envio de e-mails (ex.: Brevo)
+
+## Configuração
+
+Crie um arquivo `.env` na raiz do projeto com as variáveis abaixo (usadas em `application.properties`):
+
+```env
+DB_URL=jdbc:postgresql://localhost:5432/sistemaDeAgendamento
+DB_USERNAME=seu_usuario
+DB_PASSWORD=sua_senha
+
+SMTP_MAIL=smtp.seuprovedor.com
+SMTP_PORT=587
+SMTP_USERNAME=seu_usuario_smtp
+SMTP_PASSWORD=sua_senha_smtp
+```
+
+Outras configurações relevantes já definidas em `application.properties`:
+
+| Configuração | Valor |
+|---|---|
+| Porta da aplicação | `8081` |
+| Banco de dados | PostgreSQL |
+| Estratégia de schema | `spring.jpa.hibernate.ddl-auto=update` |
+| Formato de datas na API | `dd/MM/yyyy HH:mm:ss` (agendamento) / `dd/MM/yyyy` (nascimento) |
+| Upload máximo de anexo | `5MB` |
+
+## Como executar
+
+### Com Maven Wrapper (banco local)
+
+Windows:
+
+```powershell
+.\mvnw.cmd spring-boot:run
+```
+
+Linux/macOS:
+
+```bash
+./mvnw spring-boot:run
+```
+
+### Com Docker Compose (aplicação + banco)
+
+```bash
+docker compose up --build
+```
+
+Sobe dois serviços: `sistema-agendamentos-app` (Spring Boot, porta `8081`) e `sistema-agendamentos-db` (PostgreSQL 16, porta `5432`), com volume persistente para os dados do banco.
+
+Após subir, a aplicação fica disponível em:
+
+```text
+http://localhost:8081
+```
+
+## Documentação da API (Swagger)
+
+```text
+http://localhost:8081/swagger-ui/index.html
+```
+
+Especificação OpenAPI em JSON:
+
+```text
+http://localhost:8081/v3/api-docs
+```
+
+## Endpoints principais
+
+| Recurso | Base path | Operações |
+|---|---|---|
+| Pacientes | `/pacientes` | `POST`, `GET`, `GET /{id}`, `PUT /{id}`, `DELETE /{id}`, `GET /search` |
+| Médicos | `/medico` | `POST`, `GET`, `GET /{id}`, `PUT /{id}`, `DELETE /{id}`, `GET /search` |
+| Agendamentos | `/agendamentos` | `POST`, `DELETE /{id}` |
+| E-mail | `/email` | `POST /enviar` (multipart, com anexo) |
+
+Lista completa de endpoints, parâmetros de busca e exemplos de payload de médico/agendamento estão em [DOCUMENTACAO_PROJETO.md](DOCUMENTACAO_PROJETO.md#endpoints), ou direto no Swagger UI.
+
+## Exemplo de payload
+
+Criar paciente (`POST /pacientes`):
+
+```json
+{
+  "nome": "Maria Silva",
+  "cpf": "12345678901",
+  "telefone": "11999999999",
+  "email": "maria@email.com",
+  "dataNascimento": "10/05/1990",
+  "endereco": {
+    "rua": "Rua Central",
+    "numero": "100",
+    "complemento": "Apto 12",
+    "bairro": "Centro",
+    "cidade": "São Paulo",
+    "estado": "SP",
+    "cep": "01000-000"
+  }
+}
+```
+
+## Testes
+
+```bash
+./mvnw test
+```
+
+Windows:
+
+```powershell
+.\mvnw.cmd test
+```
+
+Testes unitários em `src/test/java/com/antonio/SistemadeAgendamentodeConsultas/unit`, cobrindo os services de paciente, médico e agendamento.
+
+## Estrutura do projeto
+
+```text
+.
+├── pom.xml
+├── Dockerfile
+├── compose.yaml
+├── src
+│   ├── main
+│   │   ├── backend/com/antonio/SistemadeAgendamentodeConsultas
+│   │   │   ├── config       # Swagger, Jackson
+│   │   │   ├── controller   # Endpoints REST
+│   │   │   ├── DTOs         # Objetos de entrada/saída
+│   │   │   ├── enums        # SituacaoCadastro, SituacaoAgendamento
+│   │   │   ├── exception
+│   │   │   ├── model        # Entidades JPA
+│   │   │   ├── repository
+│   │   │   └── service      # Regras de negócio
+│   │   └── resources
+│   │       ├── application.properties
+│   │       └── static       # Frontend (index.html, app.css, app.js)
+│   └── test/java/com/antonio/SistemadeAgendamentodeConsultas/unit
+```
+
+> O código-fonte Java fica em `src/main/backend` (configurado via `<sourceDirectory>` no `pom.xml`), não no `src/main/java` padrão.
 
 ## Autor
 
