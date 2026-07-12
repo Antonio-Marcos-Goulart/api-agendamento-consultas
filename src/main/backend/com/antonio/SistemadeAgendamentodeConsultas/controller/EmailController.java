@@ -2,6 +2,11 @@ package com.antonio.SistemadeAgendamentodeConsultas.controller;
 
 import com.antonio.SistemadeAgendamentodeConsultas.service.EmailService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/email")
+@Tag(name = "E-mail", description = "Envio de e-mails com anexo")
 public class EmailController { // Trabalha somente com as solicitações (GET, PUT, DELETE)
 
     @Autowired
@@ -20,12 +26,15 @@ public class EmailController { // Trabalha somente com as solicitações (GET, P
 
     @PostMapping(value = "/enviar", consumes = "multipart/form-data")
     @Operation(summary = "Enviar um e-mail pela API", description = "Enviar um e-mail pela API")
-
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "E-mail enviado com sucesso"),
+            @ApiResponse(responseCode = "500", description = "Erro ao enviar o e-mail", content = @Content)
+    })
     public ResponseEntity<String>enviar( // Recebe os dados do email
-            @RequestParam String destinatario,
-            @RequestParam String assunto,
-            @RequestParam String conteudo,
-            @RequestParam("anexo") MultipartFile anexo) {
+            @Parameter(description = "E-mail do destinatário", example = "paciente@email.com") @RequestParam String destinatario,
+            @Parameter(description = "Assunto do e-mail", example = "Confirmação de consulta") @RequestParam String assunto,
+            @Parameter(description = "Conteúdo/corpo do e-mail") @RequestParam String conteudo,
+            @Parameter(description = "Arquivo anexo (máx. 5MB)") @RequestParam("anexo") MultipartFile anexo) {
         try {
             emailService.enviarEmail(destinatario, assunto, conteudo, anexo);
             return ResponseEntity.ok("E-mail enviado");
